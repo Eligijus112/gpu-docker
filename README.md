@@ -4,13 +4,23 @@ A project containing information about how to enable model training with a GPU i
 
 # Virtual env on a local machine 
 
+The bellow creation of a virtual environment works for both Windows and Ubuntu. The only thing that differs, is the activation.
+
+Windows:
 ```
 virtualenv gpu_env
 source gpu_env/Scripts/activate
 pip install -r requirements.txt
 ```
 
-# Setting a GPU on local machine 
+Ubuntu:
+```
+virtualenv gpu_env
+source gpu_env/bin/activate
+pip install -r requirements.txt
+```
+
+# Setting a GPU on local machine (Windows)
 
 To set up a working Nvidia GPU on your local machine running Windows 10 refer to the steps in: https://towardsdatascience.com/installing-tensorflow-with-cuda-cudnn-and-gpu-support-on-windows-10-60693e46e781
 
@@ -25,6 +35,15 @@ https://developer.nvidia.com/cuda-downloads
 https://developer.nvidia.com/cudnn
 
 * Restart your PC.
+
+# Setting a GPU on Ubuntu
+
+A full comprehensive guide about setting up GPU on Ubuntu can be found here: 
+
+https://towardsdatascience.com/deep-learning-gpu-installation-on-ubuntu-18-4-9b12230a1d31 
+
+
+# Checking availability of GPU
 
 To test if the GPU is working correctly and is visible for the programs, run the following command:
 
@@ -43,6 +62,8 @@ All devices available for training: [PhysicalDevice(name='/physical_device:CPU:0
 If there is a physical device with the GPU tag then everything is working correctly. 
 
 # Testing out GPU on a local machine 
+
+## Python + Tensorflow
 
 To see the difference between CPU and GPU, run the scripts: 
 
@@ -85,7 +106,43 @@ Training took: 10.650710821151733 seconds
 
 So on a machine with a Threadripper CPU and a GTX 3090, it was faster to train the model on a GPU and not a CPU by **>16 times**. 
 
-# Instructions to run the GPU in docker Windows
+## R + brms
+
+One of the popular frameworks to leverage GPU for R is OpenCL. To install OpenCL on Ubuntu run the commands: 
+
+```
+# Updating just in case
+sudo apt update
+
+# Main package
+sudo apt install ocl-icd-opencl-dev
+```
+
+To test out the difference of training on a CPU vs a GPU run the code:
+
+```
+Rscript train_brms.R
+```
+
+The training time on a GPU:
+
+```
+All 4 chains finished successfully.
+Mean chain execution time: 157.0 seconds.
+Total execution time: 160.3 seconds
+```
+
+On a CPU: 
+
+```
+All 4 chains finished successfully.
+Mean chain execution time: 692.7 seconds.
+Total execution time: 705.4 seconds.
+```
+
+If a model grows in complexity so does the difference between GPU run time and CPU.
+
+# Instructions to run the GPU in docker Windows * unstable
 
 In a nutshell, docker has a very hard time running GPU on docker desktop. It is strongly advised to run it from an Ubuntu base. 
 
@@ -93,7 +150,9 @@ There are some workarounds:
 
 https://developer.nvidia.com/blog/announcing-cuda-on-windows-subsystem-for-linux-2/
 
-# Reaching the GPU in docker (Ubuntu)
+# Reaching the GPU in docker (Ubuntu) * unstable
+
+The bellow instructions may provide unstable results. This is because docker capabilities to access GPUs are obstructed and may require alot of tinkering.
 
 To reach the GPU in docker, we will use an official NVIDIA docker image: https://hub.docker.com/r/nvidia/cuda/tags 
 

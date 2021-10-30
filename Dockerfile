@@ -1,5 +1,5 @@
 # Base image 
-FROM nvidia/cuda:11.4.2-devel-ubuntu20.04
+FROM nvidia/cuda:10.2-base
 
 # Checking the availability of GPU 
-CMD ["nvvc", "-v"]
+CMD ["nvidia-smi"]
