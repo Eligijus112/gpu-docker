@@ -1,0 +1,4 @@
+GPUtil==1.4.0
+tensorflow==2.6.0
+tensorflow-datasets==4.4.0
+keras==2.6.0
