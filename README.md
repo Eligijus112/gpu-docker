@@ -154,6 +154,10 @@ https://developer.nvidia.com/blog/announcing-cuda-on-windows-subsystem-for-linux
 
 The bellow instructions may provide unstable results. This is because docker capabilities to access GPUs are obstructed and may require alot of tinkering.
 
+More on installation: 
+
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
+
 To reach the GPU in docker, we will use an official NVIDIA docker image: https://hub.docker.com/r/nvidia/cuda/tags 
 
 To build the image run the command:
