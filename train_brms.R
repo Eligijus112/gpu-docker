@@ -2,8 +2,11 @@
 library(brms)
 library(cmdstanr)
 
+# Setting cmdstanr path 
+set_cmdstan_path("/home/cmdstanr")
+
 # Ensuring that GPU is visible 
-print(OpenCL::oclDevices())
+#print(OpenCL::oclDevices())
 
 # Hyper paramters
 n <- 300000

@@ -1,0 +1,20 @@
+# Base image 
+FROM nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
+
+# Updating 
+RUN apt-get update
+
+# Instaling python
+RUN apt-get install -y python3-pip
+
+# Copying requirements
+COPY requirements.txt . 
+
+# Copying the script 
+COPY train_reuters.py .
+
+# Installing the packages 
+RUN pip install -r requirements.txt 
+
+# Running the training  
+CMD ["python3", "train_reuters.py"]

@@ -1,0 +1,46 @@
+# Base image 
+FROM nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
+
+# Updating 
+RUN apt-get update
+
+# Defining the libgit version to download and install
+ENV LIBGIT_VERSION 1.1.0
+
+# Installing TZDATA
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+
+# Installing wget
+RUN apt-get install -y wget
+
+# Installing R 
+RUN apt-get install -y r-base
+
+# Installing brms dependencies
+RUN apt-get install -y g++ build-essential libxml2-dev libcurl4-openssl-dev libssl-dev libv8-dev gcc git clang libgit2-dev
+
+# Package manager
+RUN R -e "install.packages('remotes', repos='https://cloud.r-project.org')"
+
+# Bayes analysis backend
+RUN R -e "install.packages('rstan', repos='https://cloud.r-project.org')"
+
+# This installs all the dependencies and the main package
+RUN R -e "install.packages('brms', repos='https://cloud.r-project.org')" 
+
+# Installing an additional brms backend - cmdstanr 
+RUN mkdir /home/cmdstanr
+RUN R -e "install.packages('cmdstanr', repos = c('https://mc-stan.org/r-packages/', getOption('repos')))"
+RUN R -e "library(cmdstanr); install_cmdstan('/home/cmdstanr');"
+
+# Installing openCL for GPU training 
+RUN apt-get install -y opencl-headers ocl-icd-opencl-dev nvidia-modprobe ocl-icd-libopencl1 clinfo
+
+# Installing the R package for openCL 
+RUN R -e "install.packages('OpenCL', repos='https://cloud.r-project.org')"
+
+# Copying the script 
+COPY train_brms.R .
+
+# Running the brms fitting 
+CMD ["Rscript", "train_brms.R"]

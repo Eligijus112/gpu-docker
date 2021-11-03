@@ -63,7 +63,14 @@ If there is a physical device with the GPU tag then everything is working correc
 
 # Testing out GPU on a local machine 
 
-## Python + Tensorflow
+## Python + Tensorflow (Windows)
+
+System specs: 
+
+* Windows 10 Pro 
+* 256 GB RAM 
+* AMD Threadripper 3990X
+* Geforce RTX 3090
 
 To see the difference between CPU and GPU, run the scripts: 
 
@@ -104,7 +111,54 @@ Epoch 50/50
 Training took: 10.650710821151733 seconds
 ```
 
-So on a machine with a Threadripper CPU and a GTX 3090, it was faster to train the model on a GPU and not a CPU by **>16 times**. 
+It was faster to train the model on a GPU and not a CPU by **>16 times**. 
+
+## Python + Tensorflow (Ubuntu)
+
+System specs: 
+
+* Ubuntu 20.04 LTS
+* 64 GB RAM
+* AMD Ryzen 7 5800X 
+* Geforce RTX 3080
+
+
+```
+# CPU
+python train_reuters.py cpu
+```
+```
+# GPU
+python train_reuters.py
+```
+
+Running a simple DNN model to classify reuters articles the times taken were drastically different: 
+
+For CPU script:
+
+```
+...
+Epoch 48/50
+9/9 [==============================] - 1s 113ms/step - loss: 0.0827 - accuracy: 0.9596 - val_loss: 1.7463 - val_accuracy: 0.8005
+Epoch 49/50
+9/9 [==============================] - 1s 112ms/step - loss: 0.0847 - accuracy: 0.9603 - val_loss: 1.7179 - val_accuracy: 0.8005
+Epoch 50/50
+9/9 [==============================] - 1s 112ms/step - loss: 0.0825 - accuracy: 0.9618 - val_loss: 1.7377 - val_accuracy: 0.8010
+Training took: 51.729074239730835 seconds
+```
+
+For the GPU script: 
+
+```
+...
+Epoch 48/50
+9/9 [==============================] - 0s 16ms/step - loss: 0.0846 - accuracy: 0.9621 - val_loss: 1.6438 - val_accuracy: 0.8050
+Epoch 49/50
+9/9 [==============================] - 0s 15ms/step - loss: 0.0815 - accuracy: 0.9631 - val_loss: 1.8274 - val_accuracy: 0.8028
+Epoch 50/50
+9/9 [==============================] - 0s 15ms/step - loss: 0.0864 - accuracy: 0.9580 - val_loss: 1.7148 - val_accuracy: 0.8028
+Training took: 8.480462789535522 seconds
+```
 
 ## R + brms
 
@@ -154,21 +208,69 @@ https://developer.nvidia.com/blog/announcing-cuda-on-windows-subsystem-for-linux
 
 The bellow instructions may provide unstable results. This is because docker capabilities to access GPUs are obstructed and may require alot of tinkering.
 
-More on installation: 
-
-https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
-
-To reach the GPU in docker, we will use an official NVIDIA docker image: https://hub.docker.com/r/nvidia/cuda/tags 
-
-To build the image run the command:
+The official guide by Nvidia: 
 
 ```
-docker build -t docker_gpu .
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
 ```
 
-To run and enable the GPU in docker run:
+After following the installation you can check if everything is working correctly by using the command: 
 
 ```
-docker run --gpus all docker_gpu
+sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+```
+
+The results should look similar to: 
+
+```
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 470.42.01    Driver Version: 470.42.01    CUDA Version: 11.4     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  NVIDIA GeForce ...  On   | 00000000:09:00.0  On |                  N/A |
+|  0%   34C    P8    15W / 370W |    871MiB /  9995MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
++-----------------------------------------------------------------------------+
+
+```
+
+If one can see the above table then, in theory, applications leveraging GPU should work in docker. 
+
+## Python + docker + gpu 
+
+Building the image: 
+
+```
+docker build -t python_gpu_docker -f Dockerfile-py .
+```
+
+Running the model training on a GPU in docker:
+
+```
+docker run --gpus all --runtime nvidia python_gpu_docker
+```
+
+## R + docker + gpu 
+
+Building the image: 
+
+```
+docker build -t r_gpu_docker -f Dockerfile-R .
+```
+
+Running the file: 
+
+```
+docker run --gpus all --runtime nvidia r_gpu_docker 
 ```
 
